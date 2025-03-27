@@ -46,16 +46,10 @@ export default function ProteinInput() {
       setError("Error fetching protein structure");
       console.error(error);
     }
-<<<<<<< Updated upstream
-  };
-  
-  
-=======
     //const dt = await fetch("/api/validate-sequence", {}
     // If validation passes, proceed to next step
     router.push("/structure-prediction")
   }
->>>>>>> Stashed changes
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
