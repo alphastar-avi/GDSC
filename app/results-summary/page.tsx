@@ -1,7 +1,9 @@
-"use client"
+/*"use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressIndicator } from "@/components/progress-indicator"
@@ -316,4 +318,60 @@ export default function ResultsSummary() {
     </div>
   )
 }
+*/
 
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const API_KEY = "AIzaSyCAslHSRQXIud3J0AMMUwhhpOg087I7yfM"; // Replace with your actual API key
+const genAI = new GoogleGenerativeAI(API_KEY);
+
+export default function ResultsSummary() {
+  const [summary, setSummary] = useState("Generating AI-powered summary...");
+  const [loading, setLoading] = useState(false);
+
+  async function generateSummary() {
+    setLoading(true);
+
+    const prompt = `
+      Summarize the results of a drug discovery session where:
+      - A protein structure was predicted with 92% confidence.
+      - Three binding sites were identified.
+      - 6 candidate molecules were generated.
+      - The top candidate (Compound A-123) achieved a docking score of 0.92.
+      - The molecules showed good binding interactions, particularly at Site 1.
+      
+      Provide a short, professional summary.
+    `;
+
+    try {
+      // ✅ Use the correct model name & check API version
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+      const result = await model.generateContent({ contents: [{ role: "user", parts: [{ text: prompt }] }] });
+      const responseText = result.response.candidates[0].content.parts[0].text;
+      
+      setSummary(responseText);
+    } catch (error) {
+      setSummary("Failed to generate summary. Please try again.");
+      console.error("Gemini API Error:", error);
+    }
+    setLoading(false);
+  }
+
+  return (
+    <div className="container py-8 max-w-6xl">
+      <h2 className="text-2xl font-bold mb-4">Results Summary</h2>
+
+      <div className="mb-6 p-4 border rounded-lg">
+        <p>{loading ? "Loading AI summary..." : summary}</p>
+      </div>
+
+      <Button onClick={generateSummary} disabled={loading}>
+        {loading ? "Generating..." : "Generate AI Summary"}
+      </Button>
+    </div>
+  );
+}
