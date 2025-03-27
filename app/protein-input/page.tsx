@@ -19,22 +19,36 @@ export default function ProteinInput() {
   const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    // Basic validation for FASTA format
+    e.preventDefault();
+  
     if (!sequence.trim()) {
-      setError("Please enter a protein sequence")
-      return
+      setError("Please enter a protein sequence");
+      return;
     }
+  
+    
 
-    if (!sequence.match(/^>.+\n[A-Za-z\n]+$/)) {
-      setError("Please enter a valid FASTA format sequence")
-      return
+  
+    try {
+      const response = await fetch(`https://alphafold.ebi.ac.uk/api/prediction/${sequence}`, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+        },
+      });
+      const data = await response.json();
+      console.log(JSON.stringify(data[0].pdbUrl));
+      router.push({
+        pathname: "/structure-prediction",
+        query: { pdbUrl: data[0].pdbUrl },
+      });
+    } catch (error) {
+      setError("Error fetching protein structure");
+      console.error(error);
     }
-    const dt = await fetch("/api/validate-sequence", {}
-    // If validation passes, proceed to next step
-    router.push("/structure-prediction")
-  }
+  };
+  
+  
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
