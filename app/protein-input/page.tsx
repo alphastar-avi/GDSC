@@ -37,11 +37,11 @@ export default function ProteinInput() {
         },
       });
       const data = await response.json();
-      console.log(JSON.stringify(data[0].pdbUrl));
-      router.push({
-        pathname: "/structure-prediction",
-        query: { pdbUrl: data[0].pdbUrl },
-      });
+      const glb = data[0].pdbUrl.split("/").pop().replace(".pdb", "");
+      console.log(glb);
+
+      router.push(`/structure-prediction/${glb}`)
+      
     } catch (error) {
       setError("Error fetching protein structure");
       console.error(error);

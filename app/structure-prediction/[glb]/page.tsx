@@ -5,12 +5,14 @@ import { useParams, useSearchParams } from "next/navigation";
 
 const ProteinViewer = () => {
   const searchParams = useSearchParams();
-  const url = searchParams.get("pdbUrl");
+  const para = useParams();
+  const ur = para?.glb
+  const url = "https://alphafold.ebi.ac.uk/files/"+ur+".pdb"
   useEffect(() => {
     if (url) {
       import("ngl").then((NGL) => {
         const stage = new NGL.Stage("viewport");
-        // stage.loadFile(decodeURIComponent(url), { defaultRepresentation: true });
+        stage.loadFile(decodeURIComponent(url), { defaultRepresentation: true });
       });
     }
   }, [url]);
